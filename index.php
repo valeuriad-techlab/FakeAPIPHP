@@ -3,7 +3,7 @@
 require_once dirname(__FILE__).'/lib/limonade.php';
 require_once dirname(__FILE__).'/lib/faker.php';
 
-dispatch('/', 'get');
+dispatch_get('/', 'get');
     function get() {
         $string = file_get_contents("./data.json");
         $persons = json_decode($string, true);
@@ -12,7 +12,29 @@ dispatch('/', 'get');
 
 dispatch_post('/', 'addPerson'); 
     function addPerson(){
-        return get();
+        if (
+            $_POST['age'] && 
+            $_POST['name'] &&
+            $_POST['address'] &&
+            $_POST['phoneNumber'] &&
+            $_POST['email'] &&
+            $_POST['avatar']
+        ) {
+            $person = [
+                'age' => intval($_POST['age']),
+                'name' => $_POST['name'],
+                'address'=> $_POST['address'],
+                'phoneNumber'=> $_POST['phoneNumber'],
+                'email' => $_POST['email'],
+                'avatar' => $_POST['avatar'],
+            ];
+            $string = file_get_contents("./data.json");
+            $persons = json_decode($string, true);
+            array_push($persons, $person);
+            file_put_contents("./data.json", json_encode($persons));
+            return html("Personne ajoutée !");
+        }
+        return halt(400);
     }
     
 dispatch_put('/', 'update'); 
